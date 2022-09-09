@@ -29,6 +29,8 @@ class Minesweeper:
         self.insert_bombs_in_field()
         self.set_neigbors_count()
 
+        self.print_mine_field_to_console()
+
         self.running = False
 
     def run(self):
@@ -42,6 +44,13 @@ class Minesweeper:
             self.play(event)
 
         pygame.quit()
+
+    def print_mine_field_to_console(self):
+        for row in range(0, Minesweeper.ROWS):
+            for col in range(0, Minesweeper.COLS):
+                sep = ',' if col < Minesweeper.COLS - 1 else ''
+                print(f"{self.mine_field[row][col]:3}{sep}", end='')
+            print(f"")
 
     def play(self, event):
         # Add play functions here
@@ -78,14 +87,14 @@ class Minesweeper:
         for bomb_pos in self.bomb_positions:
             row = bomb_pos[0]
             col = bomb_pos[1]
-            neighbors = self.get_neigbor_positions(row, col)
+            neighbors = self.get_valid_neigbor_positions(row, col)
             for neighbor in neighbors:
-                if not self.mine_field == Minesweeper.BOMB_ID:
-                    neighbor_row = neighbor[0]
-                    neighbor_col = neighbor[1]
+                neighbor_row = neighbor[0]
+                neighbor_col = neighbor[1]                
+                if not self.mine_field[neighbor_row][neighbor_col] == Minesweeper.BOMB_ID:
                     self.mine_field[neighbor_row][neighbor_col] += 1
 
-    def get_neigbor_positions(self, row, col):
+    def get_valid_neigbor_positions(self, row, col):
         neighbors = []
         if row > 0:  # TOP
             neighbors.append((row - 1, col))
