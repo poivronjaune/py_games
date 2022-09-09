@@ -7,8 +7,11 @@ class Minesweeper:
 
     CAPTION = "Minesweeper 0.1"
     ICON = "Minesweeper.PNG"
-    WIDTH, HEIGHT = 500, 400
+    WIDTH, HEIGHT = 400, 450
+
     BG_COLOR = "white"
+    CELL_COLOR = "grey"
+    CELL_BORDER = "black"
     ROWS, COLS = 15, 15
     MAX_BOMBS = 10
 
@@ -22,6 +25,7 @@ class Minesweeper:
         pygame.display.set_caption(Minesweeper.CAPTION)
         programIcon = pygame.image.load(Minesweeper.ICON)
         pygame.display.set_icon(programIcon)
+        self.CELL_FONT = pygame.font.SysFont('comicsans', 15)
 
         # Setup game play
         self.create_empty_mine_field(Minesweeper.ROWS, Minesweeper.COLS)
@@ -56,10 +60,6 @@ class Minesweeper:
         # Add play functions here
         self.draw()
 
-    def draw(self):
-        self.win.fill(Minesweeper.BG_COLOR)
-        pygame.display.update()
-
     def create_empty_mine_field(self, field_rows, field_cols):
         self.mine_field = [
             [Minesweeper.EMPTY_ID for _ in range(field_cols)] for _ in range(field_rows)
@@ -76,7 +76,6 @@ class Minesweeper:
                 self.bomb_positions.add(bomb_position)
 
     def insert_bombs_in_field(self):
-        bomb_num = 1
         print(f"\n")
         for bomb_pos in self.bomb_positions:
             row = bomb_pos[0]
@@ -114,6 +113,26 @@ class Minesweeper:
             neighbors.append((row + 1, col + 1))
 
         return neighbors
+
+    def draw(self):
+        self.win.fill(Minesweeper.BG_COLOR)
+        self.draw_mine_field_values()
+        pygame.display.update()
+
+    def draw_mine_field_values(self):
+        height_offset = 0
+        cell_size = Minesweeper.WIDTH // Minesweeper.COLS
+        for i, row in enumerate(self.mine_field):
+            row_y = cell_size * i
+            for j, field_value in enumerate(row):
+                col_x = cell_size * j
+                pygame.draw.rect(self.win, Minesweeper.CELL_COLOR, (col_x, row_y+height_offset, cell_size, cell_size))
+                pygame.draw.rect(self.win, Minesweeper.CELL_BORDER, (col_x, row_y+height_offset, cell_size, cell_size), 2)
+                text = self.CELL_FONT.render(str(field_value), 1, "red")
+                text_x = col_x + cell_size / 2 - text.get_width() / 2
+                text_y = row_y + cell_size / 2 - text.get_height() / 2
+                self.win.blit(text, (text_x, text_y))
+                
 
 
 def main():
